@@ -3,35 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuoteSystemX</title>
+    <title>QuoteSystemX & RecipientOFQuotes</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            color-scheme: light dark;
+            --bg: #030711;
+            --bg-soft: #0c1222;
+            --bg-panel: rgba(13, 22, 41, 0.75);
+            --text: #f5f7ff;
+            --muted: rgba(245, 247, 255, 0.65);
+            --accent: #58c5ff;
+            --accent-2: #a855f7;
+            --card-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
-            color: #333;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #101c38, #050911 45%, #01020a);
+            color: var(--text);
+            line-height: 1.6;
         }
-        .container {
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            padding: 2.5rem clamp(1.5rem, 4vw, 6rem) 3rem;
+            background: linear-gradient(135deg, rgba(9, 18, 42, 0.95), rgba(3, 7, 17, 0.98));
+            border-bottom: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% -10%, rgba(88, 197, 255, 0.22), transparent 50%),
+                        radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.18), transparent 45%);
+            pointer-events: none;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .nav-links a {
+            padding: 0.4rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            border-bottom-color: var(--accent);
+        }
+
+        .hero-content {
+            margin-top: 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.5rem, 4vw, 4.3rem);
+            margin-bottom: 1rem;
+        }
+
+        .hero-text p {
+            color: var(--muted);
+            max-width: 42ch;
+        }
+
+        .hero-cta {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .button {
+            padding: 0.85rem 1.6rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            transition: transform 0.2s ease, border 0.2s ease, background 0.2s ease;
+        }
+
+        .button.primary {
+            background: linear-gradient(120deg, #58c5ff, #a855f7);
+            color: #050911;
+        }
+
+        .button.secondary {
+            border-color: var(--card-border);
+            color: var(--muted);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-panel {
+            background: rgba(3, 8, 24, 0.7);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .stat-grid {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        main {
+            padding: clamp(2rem, 5vw, 5rem);
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        section {
+            background: rgba(6, 12, 26, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: clamp(1.75rem, 4vw, 3rem);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .section-heading {
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            margin: 0 0 1rem;
+            font-size: clamp(1.8rem, 3vw, 2.7rem);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            padding: 1.5rem;
+            border-radius: 18px;
+            border: 1px solid var(--card-border);
+            background: rgba(9, 15, 31, 0.8);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(88, 197, 255, 0.5);
+        }
+
+        .card span {
+            font-size: 0.85rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
+
+        .card h3 {
+            margin: 0.6rem 0;
+        }
+
+        ul {
+            padding-left: 1rem;
+            margin: 0;
+            color: var(--muted);
+        }
+
+        li + li {
+            margin-top: 0.35rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(88, 197, 255, 0.15);
+            border: 1px solid rgba(88, 197, 255, 0.4);
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .roadmap {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .roadmap-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .roadmap-item strong {
+            min-width: 80px;
+            color: var(--accent-2);
+        }
+
+        .cta {
             text-align: center;
-            padding: 50px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, rgba(88, 197, 255, 0.18), rgba(168, 85, 247, 0.18));
         }
-        h1 {
-            color: #1a73e8;
+
+        footer {
+            padding: 2rem clamp(1.5rem, 4vw, 6rem) 3rem;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 720px) {
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .hero-content {
+                margin-top: 2.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to QuoteSystemX</h1>
-        <p>Your one-stop solution for all your needs.</p>
-        <p>Our website is currently under construction. Please check back later!</p>
-    </div>
+    <header>
+        <nav class="nav">
+            <div class="logo">QuoteSystemX Suite</div>
+            <div class="nav-links">
+                <a href="#overview">Overview</a>
+                <a href="#quotesystemx">QuoteSystemX</a>
+                <a href="#recipientofquotes">RecipientOFQuotes</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#roadmap">Roadmap</a>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <div class="hero-text">
+                <p class="badge">Next generation quoting</p>
+                <h1>Connected intelligence for quoting pipelines.</h1>
+                <p>QuoteSystemX aligns quoting operations, while RecipientOFQuotes turns every delivered quote into a living asset. Together they power transparent procurement, automated SLAs, and measurable business impact.</p>
+                <div class="hero-cta">
+                    <a class="button primary" href="#quotesystemx">Explore QuoteSystemX</a>
+                    <a class="button secondary" href="#recipientofquotes">See RecipientOFQuotes</a>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <p class="section-heading">Platform Signals</p>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>7x</h3>
+                        <p>Faster RFQ turnarounds after automation.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>42%</h3>
+                        <p>Reduction in quote revisions due to live recipient feedback.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>120+</h3>
+                        <p>Policy packs powering governance and compliance.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>24/7</h3>
+                        <p>Observability pipeline spanning both projects.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="overview">
+            <p class="section-heading">Unified Program</p>
+            <h2>QuoteSystemX + RecipientOFQuotes</h2>
+            <div class="two-column">
+                <div>
+                    <p>The suite delivers an end-to-end pathway from quote origination to downstream engagement analytics. Inspired by the storytelling-forward style of Harvester HCI, this microsite highlights the mission, differentiators, and roadmap that guide both initiatives.</p>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <span>North Star</span>
+                        <h3>Trusted quoting intelligence</h3>
+                        <p>Every quote is explainable, policy-aware, and ready for instant distribution.</p>
+                    </div>
+                    <div class="card">
+                        <span>Deployment</span>
+                        <h3>Hybrid ready</h3>
+                        <p>Edge-friendly collectors plus secure SaaS control plane.</p>
+                    </div>
+                    <div class="card">
+                        <span>People</span>
+                        <h3>Operators first</h3>
+                        <p>Role-based work surfaces for sourcing, finance, and partner teams.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quotesystemx">
+            <p class="section-heading">QuoteSystemX</p>
+            <h2>Orchestrated quoting pipelines with guardrails.</h2>
+            <div class="two-column">
+                <div>
+                    <p>QuoteSystemX ingests complex RFQs, runs pricing models, and publishes composed offers. Operators monitor every stage through a mission control experience patterned after modern HCI dashboards.</p>
+                    <ul>
+                        <li>Composable pricing engines with versioned strategies.</li>
+                        <li>Live health map for integrations and SLA triggers.</li>
+                        <li>“Moments” stream to replay decisions for audits.</li>
+                        <li>Policy packs that codify procurement playbooks.</li>
+                    </ul>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <span>Key capability</span>
+                        <h3>Signal-driven intake</h3>
+                        <p>OCR, API, and CSV channels normalize inbound data in minutes.</p>
+                    </div>
+                    <div class="card">
+                        <span>Experience</span>
+                        <h3>Operator cockpit</h3>
+                        <p>Customizable widgets mirror the Harvester layout ethos.</p>
+                    </div>
+                    <div class="card">
+                        <span>Outcomes</span>
+                        <h3>Predictable margins</h3>
+                        <p>Embedded finance models enforce guardrails before publishing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recipientofquotes">
+            <p class="section-heading">RecipientOFQuotes</p>
+            <h2>Post-delivery telemetry meets relationship analytics.</h2>
+            <div class="two-column">
+                <div>
+                    <p>RecipientOFQuotes extends the lifecycle after quotes leave the building. Each recipient channel—email, partner portal, or API webhook—feeds engagement signals back to QuoteSystemX for instant iteration.</p>
+                    <ul>
+                        <li>Adaptive layouts optimized for every recipient persona.</li>
+                        <li>Feedback capsules capture sentiment directly inside quotes.</li>
+                        <li>Engagement scoring loops into forecast accuracy.</li>
+                        <li>Auto-escalation for stalled or at-risk conversations.</li>
+                    </ul>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <span>Key capability</span>
+                        <h3>Experience lab</h3>
+                        <p>Rapid A/B experiments to validate messaging and incentives.</p>
+                    </div>
+                    <div class="card">
+                        <span>Telemetry</span>
+                        <h3>Conversation DNA</h3>
+                        <p>Contextual heatmaps show who is viewing or collaborating.</p>
+                    </div>
+                    <div class="card">
+                        <span>Outcomes</span>
+                        <h3>Faster decisions</h3>
+                        <p>Insights flow back to pricing owners within minutes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture">
+            <p class="section-heading">System design</p>
+            <h2>Composable reference architecture</h2>
+            <div class="architecture-grid">
+                <div class="card">
+                    <span>Layer</span>
+                    <h3>Acquisition</h3>
+                    <p>Webhook, SFTP, and partner connectors feed into the QuoteSystemX intake bus with schema enforcement and queue back-pressure controls.</p>
+                </div>
+                <div class="card">
+                    <span>Layer</span>
+                    <h3>Processing</h3>
+                    <p>Model shards run in isolated workspaces, and every decision snapshot is written to an immutable log accessible via the Operator Cockpit.</p>
+                </div>
+                <div class="card">
+                    <span>Layer</span>
+                    <h3>Engagement</h3>
+                    <p>RecipientOFQuotes renders tailored experiences, streaming telemetry into a unified lake for analytics, alerts, and AI copilots.</p>
+                </div>
+                <div class="card">
+                    <span>Layer</span>
+                    <h3>Observability</h3>
+                    <p>Unified tracing, cost dashboards, and governance checks create the same transparency Harvester highlights for edge clouds.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap">
+            <p class="section-heading">2025 focus</p>
+            <h2>Roadmap & initiative beats</h2>
+            <div class="roadmap">
+                <div class="roadmap-item">
+                    <strong>Q1</strong>
+                    <p>Release shared schema registry and publish the RecipientOFQuotes SDK for custom channels.</p>
+                </div>
+                <div class="roadmap-item">
+                    <strong>Q2</strong>
+                    <p>Launch Insights Studio with advanced attribution and deal-path clustering.</p>
+                </div>
+                <div class="roadmap-item">
+                    <strong>Q3</strong>
+                    <p>Deliver multi-tenant governance packs plus reporting APIs for finance and compliance teams.</p>
+                </div>
+                <div class="roadmap-item">
+                    <strong>Q4</strong>
+                    <p>Expand AI copilots that co-author responses, quotes, and negotiation nudges inside both products.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <p class="section-heading">Get involved</p>
+            <h2>Champion the future of quoting intelligence.</h2>
+            <p>We are actively partnering with sourcing leads, RevOps strategists, and customer teams to refine the roadmap. Book a discovery session or join the private beta cohort.</p>
+            <div class="hero-cta" style="justify-content: center; margin-top: 1.5rem;">
+                <a class="button primary" href="mailto:team@quotesystemx.io">Book a Session</a>
+                <a class="button secondary" href="mailto:beta@recipientofquotes.io">Join the Beta</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; <span id="year"></span> QuoteSystemX Suite. Inspired by the craft of HarvesterHCI.
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
