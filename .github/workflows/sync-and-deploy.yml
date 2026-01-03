@@ -51,6 +51,9 @@ jobs:
       - name: Install Hugo modules
         run: hugo mod get
 
+      - name: Install npm dependencies
+        run: npm install
+
       - name: Clear existing docs
         run: |
           rm -rf content/docs/*
