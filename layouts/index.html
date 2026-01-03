@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Site.Title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .doc-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .doc-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .doc-card h2 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .doc-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .doc-card a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .doc-card a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>{{ .Site.Title }}</h1>
+            <p>{{ .Site.Params.description }}</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <main>
+            {{ if .Content }}
+                {{ .Content }}
+            {{ else }}
+                <h2>Documentation</h2>
+                <p>Select a project to view its documentation:</p>
+            {{ end }}
+            
+            <div class="docs-grid">
+                {{ range where .Site.Sections "Section" "docs" }}
+                    {{ range .Sections }}
+                        <div class="doc-card">
+                            <h2>{{ .Title }}</h2>
+                            {{ if .Params.description }}
+                                <p>{{ .Params.description }}</p>
+                            {{ end }}
+                            <a href="{{ .Permalink }}">View documentation →</a>
+                        </div>
+                    {{ end }}
+                {{ end }}
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; {{ now.Year }} {{ .Site.Title }}. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
+

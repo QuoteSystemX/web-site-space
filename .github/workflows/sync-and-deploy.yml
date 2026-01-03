@@ -1,0 +1,72 @@
+name: Sync Documentation and Deploy
+
+on:
+  schedule:
+    # Runs every day at 2:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Can be triggered manually
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  sync-and-deploy:
+    runs-on: arc-runner-set
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2.2.1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          owner: QuoteSystemX
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Clear existing docs
+        run: |
+          rm -rf content/docs/*
+          mkdir -p content/docs
+
+      - name: Sync documentation from repositories
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          node scripts/sync-docs.js
+
+      - name: Build Hugo site
+        run: |
+          hugo --minify
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

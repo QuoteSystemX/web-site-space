@@ -1,0 +1,24 @@
+baseURL = 'https://quotesystemx.space/'
+languageCode = 'en'
+title = 'QuoteSystemX Documentation'
+theme = 'docsy'
+
+[params]
+  description = "Centralized documentation for QuoteSystemX company"
+  versions = ["latest"]
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "Documentation"
+    url = "/docs/"
+    weight = 2
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+

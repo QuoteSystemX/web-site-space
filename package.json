@@ -1,0 +1,12 @@
+{
+  "name": "web-site-space",
+  "version": "1.0.0",
+  "description": "Centralized documentation site for QuoteSystemX",
+  "scripts": {
+    "sync-docs": "node scripts/sync-docs.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

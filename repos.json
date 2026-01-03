@@ -1,0 +1,19 @@
+{
+  "repositories": [
+    {
+      "name": "RecipientOFQuotes",
+      "url": "https://github.com/QuoteSystemX/RecipientOFQuotes.git",
+      "docs_path": "docs",
+      "display_name": "Recipient OF Quotes",
+      "description": "This is a Go language application designed to collect, process and analyze quotes from various exchanges."
+    },
+    {
+      "name": "RecipientOFQuotes-Worker",
+      "url": "https://github.com/QuoteSystemX/RecipientOFQuotes-Worker.git",
+      "docs_path": "docs",
+      "display_name": "Recipient OF Quotes Worker",
+      "description": "A service for automated sending and processing of quotes. Works as a worker, receiving tasks, processing them and sending the results via a message queue. Supports integration with various quote sources and delivery systems."
+    }
+  ]
+}
+
