@@ -8,7 +8,12 @@ title = 'QuoteSystemX Documentation'
 
 [params]
   description = "Centralized documentation for QuoteSystemX company"
-  versions = ["latest"]
+
+[ui]
+  [ui.feedback]
+    enable = false
+  [ui.versions_menu]
+    enable = false
 
 [menu]
   [[menu.main]]
