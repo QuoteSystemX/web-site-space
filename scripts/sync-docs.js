@@ -68,11 +68,48 @@ function cloneRepo(repo) {
     }
     fs.mkdirSync(targetDocsPath, { recursive: true });
     
-    // Copy documentation
+    // Copy documentation files using Node.js fs
     console.log(`📋 Copying documentation from ${repoName}...`);
-    execSync(`cp -r "${sourceDocsPath}"/* "${targetDocsPath}/"`, { stdio: 'inherit' });
+    const files = fs.readdirSync(sourceDocsPath);
+    let copiedCount = 0;
     
-    // Create _index.md file with repository metadata
+    files.forEach(file => {
+      const sourceFile = path.join(sourceDocsPath, file);
+      const targetFile = path.join(targetDocsPath, file);
+      const stat = fs.statSync(sourceFile);
+      
+      if (stat.isFile()) {
+        // Skip _index.md if it exists - we'll create our own
+        if (file !== '_index.md') {
+          fs.copyFileSync(sourceFile, targetFile);
+          copiedCount++;
+        }
+      } else if (stat.isDirectory()) {
+        // Recursively copy directories
+        const copyDir = (src, dest) => {
+          if (!fs.existsSync(dest)) {
+            fs.mkdirSync(dest, { recursive: true });
+          }
+          const entries = fs.readdirSync(src);
+          entries.forEach(entry => {
+            const srcPath = path.join(src, entry);
+            const destPath = path.join(dest, entry);
+            const entryStat = fs.statSync(srcPath);
+            if (entryStat.isFile()) {
+              fs.copyFileSync(srcPath, destPath);
+              copiedCount++;
+            } else if (entryStat.isDirectory()) {
+              copyDir(srcPath, destPath);
+            }
+          });
+        };
+        copyDir(sourceFile, targetFile);
+      }
+    });
+    
+    console.log(`   📄 Copied ${copiedCount} files`);
+    
+    // Create _index.md file with repository metadata (overwrite if exists)
     const indexContent = `---
 title: "${repo.display_name || repoName}"
 description: "${repo.description || ''}"

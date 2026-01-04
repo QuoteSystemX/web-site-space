@@ -90,16 +90,39 @@
                 {{ .Content }}
             {{ end }}
             
-            <ul class="docs-list">
-                {{ range .Pages }}
-                    <li>
-                        <a href="{{ .Permalink }}">{{ .Title }}</a>
-                        {{ if .Params.description }}
-                            <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">{{ .Params.description }}</p>
-                        {{ end }}
-                    </li>
-                {{ end }}
-            </ul>
+            {{ $regularPages := where .Pages "Kind" "page" }}
+            {{ if $regularPages }}
+                <h2 style="margin-top: 2rem; margin-bottom: 1rem; color: #667eea;">Documentation Files</h2>
+                <ul class="docs-list">
+                    {{ range $regularPages.ByTitle }}
+                        <li>
+                            <a href="{{ .Permalink }}">{{ .Title }}</a>
+                            {{ if .Params.description }}
+                                <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">{{ .Params.description }}</p>
+                            {{ else if .Summary }}
+                                <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">{{ .Summary | truncate 150 }}</p>
+                            {{ end }}
+                        </li>
+                    {{ end }}
+                </ul>
+            {{ else }}
+                <p style="margin-top: 2rem; color: #666;">No documentation files found in this section.</p>
+            {{ end }}
+            
+            {{ $subsections := where .Pages "Kind" "section" }}
+            {{ if $subsections }}
+                <h2 style="margin-top: 2rem; margin-bottom: 1rem; color: #667eea;">Subsections</h2>
+                <ul class="docs-list">
+                    {{ range $subsections }}
+                        <li>
+                            <a href="{{ .Permalink }}">{{ .Title }}</a>
+                            {{ if .Params.description }}
+                                <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">{{ .Params.description }}</p>
+                            {{ end }}
+                        </li>
+                    {{ end }}
+                </ul>
+            {{ end }}
         </main>
         
         <footer>
