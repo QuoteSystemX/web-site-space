@@ -27,6 +27,84 @@ if (!config.repositories || !Array.isArray(config.repositories)) {
 
 console.log(`📚 Found ${config.repositories.length} repositories to sync\n`);
 
+// Function to ensure markdown file has title in front matter
+function ensureTitleInFile(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    
+    // Check if file has front matter
+    const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+    const match = content.match(frontMatterRegex);
+    
+    // Helper function to extract title from content
+    const extractTitle = (bodyContent) => {
+      // Try to extract from first heading
+      const headingMatch = bodyContent.match(/^#+\s+(.+)$/m);
+      if (headingMatch) {
+        return headingMatch[1].trim();
+      }
+      // Use filename as title
+      const fileName = path.basename(filePath, '.md');
+      return fileName
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
+    
+    // Helper function to check if title exists and is not empty
+    const hasValidTitle = (frontMatterText) => {
+      const titleMatch = frontMatterText.match(/^title:\s*(.+)$/m);
+      if (titleMatch) {
+        const titleValue = titleMatch[1].trim();
+        // Remove quotes if present
+        const cleanTitle = titleValue.replace(/^["']|["']$/g, '').trim();
+        return cleanTitle.length > 0;
+      }
+      return false;
+    };
+    
+    if (match) {
+      // File has front matter
+      const frontMatter = match[1];
+      const body = match[2];
+      
+      // Check if title exists and is valid
+      if (!hasValidTitle(frontMatter)) {
+        // Extract title from first heading or filename
+        let title = extractTitle(body);
+        
+        // Escape quotes in title
+        title = title.replace(/"/g, '\\"');
+        
+        // Remove existing title line if present but empty
+        let newFrontMatter = frontMatter.replace(/^title:\s*.*$/m, '');
+        newFrontMatter = newFrontMatter.trim();
+        
+        // Add title to front matter
+        if (newFrontMatter) {
+          newFrontMatter = newFrontMatter + `\ntitle: "${title}"`;
+        } else {
+          newFrontMatter = `title: "${title}"`;
+        }
+        
+        const newContent = `---\n${newFrontMatter}\n---\n${body}`;
+        fs.writeFileSync(filePath, newContent, 'utf8');
+      }
+    } else {
+      // No front matter - create it
+      let title = extractTitle(content);
+      
+      // Escape quotes in title
+      title = title.replace(/"/g, '\\"');
+      
+      const newContent = `---\ntitle: "${title}"\n---\n${content}`;
+      fs.writeFileSync(filePath, newContent, 'utf8');
+    }
+  } catch (error) {
+    console.error(`⚠️  Error processing ${filePath}:`, error.message);
+  }
+}
+
 // Function to clone repository with token
 function cloneRepo(repo) {
   const repoName = repo.name;
@@ -80,7 +158,12 @@ function cloneRepo(repo) {
       
       if (stat.isFile()) {
         // Skip _index.md if it exists - we'll create our own
-        if (file !== '_index.md') {
+        if (file !== '_index.md' && file.endsWith('.md')) {
+          fs.copyFileSync(sourceFile, targetFile);
+          // Ensure file has title in front matter
+          ensureTitleInFile(targetFile);
+          copiedCount++;
+        } else if (file !== '_index.md') {
           fs.copyFileSync(sourceFile, targetFile);
           copiedCount++;
         }
@@ -96,8 +179,15 @@ function cloneRepo(repo) {
             const destPath = path.join(dest, entry);
             const entryStat = fs.statSync(srcPath);
             if (entryStat.isFile()) {
-              fs.copyFileSync(srcPath, destPath);
-              copiedCount++;
+              if (entry.endsWith('.md') && entry !== '_index.md') {
+                fs.copyFileSync(srcPath, destPath);
+                // Ensure file has title in front matter
+                ensureTitleInFile(destPath);
+                copiedCount++;
+              } else {
+                fs.copyFileSync(srcPath, destPath);
+                copiedCount++;
+              }
             } else if (entryStat.isDirectory()) {
               copyDir(srcPath, destPath);
             }
