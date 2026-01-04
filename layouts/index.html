@@ -95,16 +95,34 @@
             {{ end }}
             
             <div class="docs-grid">
-                {{ range where .Site.Sections "Section" "docs" }}
-                    {{ range .Sections }}
-                        <div class="doc-card">
-                            <h2>{{ .Title }}</h2>
-                            {{ if .Params.description }}
-                                <p>{{ .Params.description }}</p>
+                {{ $docsSection := .Site.GetPage "section" "docs" }}
+                {{ if $docsSection }}
+                    {{ $subsections := $docsSection.Sections }}
+                    {{ if $subsections }}
+                        {{ range $subsections }}
+                            <div class="doc-card">
+                                <h2>{{ .Title }}</h2>
+                                {{ if .Params.description }}
+                                    <p>{{ .Params.description }}</p>
+                                {{ end }}
+                                <a href="{{ .Permalink }}">View documentation →</a>
+                            </div>
+                        {{ end }}
+                    {{ else }}
+                        {{ range $docsSection.Pages }}
+                            {{ if eq .Kind "section" }}
+                                <div class="doc-card">
+                                    <h2>{{ .Title }}</h2>
+                                    {{ if .Params.description }}
+                                        <p>{{ .Params.description }}</p>
+                                    {{ end }}
+                                    <a href="{{ .Permalink }}">View documentation →</a>
+                                </div>
                             {{ end }}
-                            <a href="{{ .Permalink }}">View documentation →</a>
-                        </div>
+                        {{ end }}
                     {{ end }}
+                {{ else }}
+                    <p>No documentation available yet. Documentation will be synced automatically from configured repositories.</p>
                 {{ end }}
             </div>
         </main>

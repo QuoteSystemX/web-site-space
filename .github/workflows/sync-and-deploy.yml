@@ -68,6 +68,7 @@ jobs:
       - name: Build Hugo site
         run: |
           hugo --minify
+          touch public/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
