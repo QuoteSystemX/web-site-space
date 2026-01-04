@@ -8,11 +8,15 @@ title = 'QuoteSystemX Documentation'
 
 [params]
   description = "Centralized documentation for QuoteSystemX company"
-
-[ui]
-  [ui.feedback]
+  
+[params.ui]
+  [params.ui.sidebar]
+    search = true
+    tree_root = true
+    collapse_sections = true
+  [params.ui.feedback]
     enable = false
-  [ui.versions_menu]
+  [params.ui.versions_menu]
     enable = false
 
 [menu]
