@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const path = require('path');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -127,10 +127,15 @@ function cloneRepo(repo) {
     );
     
     // Clone repository (shallow clone for speed)
-    execSync(
-      `git clone --depth 1 --quiet "${urlWithToken}" "${tempRepoPath}"`,
+    const result = spawnSync(
+      'git',
+      ['clone', '--depth', '1', '--quiet', urlWithToken, tempRepoPath],
       { stdio: 'inherit' }
     );
+
+    if (result.status !== 0) {
+      throw new Error(`Git clone failed with status ${result.status}`);
+    }
     
     const sourceDocsPath = path.join(tempRepoPath, docsPath);
     const targetDocsPath = path.join(DOCS_DIR, repoName);
