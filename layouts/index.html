@@ -105,7 +105,7 @@
                                 {{ if .Params.description }}
                                     <p>{{ .Params.description }}</p>
                                 {{ end }}
-                                <a href="{{ .Permalink }}">View documentation →</a>
+                                <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
                             </div>
                         {{ end }}
                     {{ else }}
@@ -116,7 +116,7 @@
                                     {{ if .Params.description }}
                                         <p>{{ .Params.description }}</p>
                                     {{ end }}
-                                    <a href="{{ .Permalink }}">View documentation →</a>
+                                    <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
                                 </div>
                             {{ end }}
                         {{ end }}
