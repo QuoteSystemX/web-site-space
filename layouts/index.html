@@ -42,6 +42,8 @@
             margin-top: 2rem;
         }
         .doc-card {
+            display: block;
+            text-decoration: none;
             background: white;
             border-radius: 8px;
             padding: 1.5rem;
@@ -100,24 +102,24 @@
                     {{ $subsections := $docsSection.Sections }}
                     {{ if $subsections }}
                         {{ range $subsections }}
-                            <div class="doc-card">
+                            <a href="{{ .Permalink }}" class="doc-card" aria-label="View documentation for {{ .Title }}">
                                 <h2>{{ .Title }}</h2>
                                 {{ if .Params.description }}
                                     <p>{{ .Params.description }}</p>
                                 {{ end }}
-                                <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
-                            </div>
+                                <span>View documentation →</span>
+                            </a>
                         {{ end }}
                     {{ else }}
                         {{ range $docsSection.Pages }}
                             {{ if eq .Kind "section" }}
-                                <div class="doc-card">
+                                <a href="{{ .Permalink }}" class="doc-card" aria-label="View documentation for {{ .Title }}">
                                     <h2>{{ .Title }}</h2>
                                     {{ if .Params.description }}
                                         <p>{{ .Params.description }}</p>
                                     {{ end }}
-                                    <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
-                                </div>
+                                    <span>View documentation →</span>
+                                </a>
                             {{ end }}
                         {{ end }}
                     {{ end }}
