@@ -60,12 +60,24 @@
             color: #666;
             margin-bottom: 1rem;
         }
-        .doc-card a {
-            color: #667eea;
+        .doc-card, .doc-card:visited {
+            color: inherit;
             text-decoration: none;
+            display: block;
+        }
+        .doc-card h2 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .doc-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .doc-card .view-docs {
+            color: #667eea;
             font-weight: 500;
         }
-        .doc-card a:hover {
+        .doc-card:hover .view-docs {
             text-decoration: underline;
         }
         footer {
@@ -100,24 +112,24 @@
                     {{ $subsections := $docsSection.Sections }}
                     {{ if $subsections }}
                         {{ range $subsections }}
-                            <div class="doc-card">
+                            <a href="{{ .Permalink }}" class="doc-card" aria-label="View documentation for {{ .Title }}">
                                 <h2>{{ .Title }}</h2>
                                 {{ if .Params.description }}
                                     <p>{{ .Params.description }}</p>
                                 {{ end }}
-                                <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
-                            </div>
+                                <span class="view-docs">View documentation →</span>
+                            </a>
                         {{ end }}
                     {{ else }}
                         {{ range $docsSection.Pages }}
                             {{ if eq .Kind "section" }}
-                                <div class="doc-card">
+                                <a href="{{ .Permalink }}" class="doc-card" aria-label="View documentation for {{ .Title }}">
                                     <h2>{{ .Title }}</h2>
                                     {{ if .Params.description }}
                                         <p>{{ .Params.description }}</p>
                                     {{ end }}
-                                    <a href="{{ .Permalink }}" aria-label="View documentation for {{ .Title }}">View documentation →</a>
-                                </div>
+                                    <span class="view-docs">View documentation →</span>
+                                </a>
                             {{ end }}
                         {{ end }}
                     {{ end }}
