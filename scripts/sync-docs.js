@@ -111,6 +111,21 @@ function cloneRepo(repo) {
   const repoUrl = repo.url;
   const docsPath = repo.docs_path || 'docs';
   const tempRepoPath = path.join(TEMP_DIR, repoName);
+
+  // 🛡️ SECURITY: Prevent path traversal
+  const resolvedTempPath = path.resolve(tempRepoPath);
+  const resolvedDocsDir = path.resolve(DOCS_DIR);
+
+  if (!resolvedTempPath.startsWith(path.resolve(TEMP_DIR))) {
+    console.error(`❌ CRITICAL: Path traversal detected in repository name: "${repoName}". Skipping.`);
+    return false;
+  }
+
+  const targetDocsPath = path.join(DOCS_DIR, repoName);
+  if (!path.resolve(targetDocsPath).startsWith(resolvedDocsDir)) {
+    console.error(`❌ CRITICAL: Path traversal detected in repository name: "${repoName}". Skipping.`);
+    return false;
+  }
   
   // Remove old directory if exists
   if (fs.existsSync(tempRepoPath)) {
