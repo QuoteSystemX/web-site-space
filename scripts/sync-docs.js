@@ -134,6 +134,12 @@ function cloneRepo(repo) {
 
   try {
     console.log(`🔄 Cloning ${repoName}...`);
+
+    // 🛡️ SECURITY: Ensure the URL is a github.com URL before embedding the token.
+    if (!repoUrl.startsWith('https://github.com/')) {
+        console.error(`❌ CRITICAL: Repository URL "${repoUrl}" is not a GitHub URL. Skipping to prevent token leakage.`);
+        return false;
+    }
     
     // Replace URL to use token
     const urlWithToken = repoUrl.replace(
