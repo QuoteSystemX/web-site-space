@@ -141,16 +141,10 @@ function cloneRepo(repo) {
         return false;
     }
     
-    // Replace URL to use token
-    const urlWithToken = repoUrl.replace(
-      'https://github.com/',
-      `https://x-access-token:${GITHUB_TOKEN}@github.com/`
-    );
-    
     // Clone repository (shallow clone for speed)
     const result = spawnSync(
       'git',
-      ['clone', '--depth', '1', '--quiet', urlWithToken, tempRepoPath],
+      ['clone', '--depth', '1', '--quiet', repoUrl, tempRepoPath],
       { stdio: 'inherit' }
     );
 
@@ -251,6 +245,19 @@ weight: 1
 // Check for token
 if (!GITHUB_TOKEN) {
   console.error('❌ GITHUB_TOKEN is not set in environment variables');
+  process.exit(1);
+}
+
+// Configure git to use the token for authentication to avoid exposing it in logs
+console.log('🔒 Configuring git credentials...');
+const gitConfig = spawnSync(
+  'git',
+  ['config', '--global', `url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf`, 'https://github.com/'],
+  { stdio: 'inherit' }
+);
+
+if (gitConfig.status !== 0) {
+  console.error('❌ Failed to configure git credentials');
   process.exit(1);
 }
 
