@@ -1,0 +1,3 @@
+## 2024-08-16 - Keep Commits Atomic and Focused
+**Learning:** A pull request should represent a single, atomic change. Bundling unrelated modifications, such as environment artifacts (`go.sum`) or configuration changes (`.gitignore`), with a specific feature or bug fix (like a UX improvement) will be rejected. This keeps the project history clean and makes changes easier to review and revert.
+**Action:** Before submitting, I will always review the changeset to ensure it only contains files directly related to the task at hand. Any unrelated changes, even if beneficial, must be submitted in a separate pull request.
