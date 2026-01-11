@@ -108,6 +108,12 @@ function ensureTitleInFile(filePath) {
 // Function to clone repository with token
 function cloneRepo(repo) {
   const repoName = repo.name;
+
+  // 🛡️ SECURITY: Disallow directory traversal characters in repository name.
+  if (repoName.includes('..') || repoName.includes('/') || repoName.includes('\\')) {
+    console.error(`❌ CRITICAL: Path traversal attempt detected in repository name: "${repoName}". Skipping.`);
+    return false;
+  }
   const repoUrl = repo.url;
   const docsPath = repo.docs_path || 'docs';
   const tempRepoPath = path.join(TEMP_DIR, repoName);
