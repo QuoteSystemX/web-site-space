@@ -146,6 +146,12 @@ function cloneRepo(repo) {
         console.error(`❌ CRITICAL: Repository URL "${repoUrl}" is not a GitHub URL. Skipping to prevent token leakage.`);
         return false;
     }
+
+    // 🛡️ SECURITY: Prevent command injection by disallowing spaces in the URL.
+    if (repoUrl.includes(' ')) {
+        console.error(`❌ CRITICAL: Command injection attempt detected in repository URL: "${repoUrl}". URL cannot contain spaces. Skipping.`);
+        return false;
+    }
     
     // Clone repository (shallow clone for speed)
     const result = spawnSync(
