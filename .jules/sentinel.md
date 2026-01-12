@@ -13,3 +13,11 @@
 **Learning:** An attacker with the ability to modify the `repos.json` file could add a malicious URL pointing to a server they control. When the sync script runs, it would send the `GITHUB_TOKEN` to this malicious server, compromising repository access. The root cause was the implicit trust that all configured repository URLs were safe.
 
 **Prevention:** Before embedding sensitive credentials into a URL, always validate that the URL's hostname belongs to the expected, trusted domain. In this case, a simple check to ensure the URL starts with `https://github.com/` was added to prevent the token from being sent to an untrusted third party.
+
+## 2024-08-07 - Command Injection in Sync Script
+
+**Vulnerability:** A command injection vulnerability was identified in the `scripts/sync-docs.js` script. The `repo.url` from `repos.json` was passed directly to a `git clone` command, allowing an attacker to inject arbitrary command-line options.
+
+**Learning:** An attacker who could modify `repos.json` could add spaces and git options (e.g., `--upload-pack='touch /tmp/pwned'`) to the `repo.url` field. This would lead to arbitrary command execution on the machine running the script. The root cause was the failure to sanitize the URL before using it as an argument in a shell command.
+
+**Prevention:** To prevent this, all inputs used in shell commands must be strictly validated. The fix was to disallow spaces in the `repo.url`, which effectively prevents the injection of additional command-line arguments.
