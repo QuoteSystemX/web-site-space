@@ -141,22 +141,29 @@ function cloneRepo(repo) {
   try {
     console.log(`🔄 Cloning ${repoName}...`);
 
-    // 🛡️ SECURITY: Ensure the URL is a github.com URL before embedding the token.
-    if (!repoUrl.startsWith('https://github.com/')) {
-        console.error(`❌ CRITICAL: Repository URL "${repoUrl}" is not a GitHub URL. Skipping to prevent token leakage.`);
-        return false;
-    }
-
     // 🛡️ SECURITY: Prevent command injection by disallowing spaces in the URL.
     if (repoUrl.includes(' ')) {
         console.error(`❌ CRITICAL: Command injection attempt detected in repository URL: "${repoUrl}". URL cannot contain spaces. Skipping.`);
         return false;
     }
+
+    let authenticatedUrl = repoUrl;
+    try {
+      const url = new URL(repoUrl);
+      if (url.hostname !== 'github.com') {
+        console.error(`❌ CRITICAL: Repository URL hostname is not github.com: "${repoUrl}". Skipping to prevent token leakage.`);
+        return false;
+      }
+      authenticatedUrl = `https://x-access-token:${GITHUB_TOKEN}@${url.hostname}${url.pathname}${url.search}`;
+    } catch (e) {
+      console.error(`❌ CRITICAL: Invalid repository URL: "${repoUrl}". Skipping.`);
+      return false;
+    }
     
     // Clone repository (shallow clone for speed)
     const result = spawnSync(
       'git',
-      ['clone', '--depth', '1', '--quiet', repoUrl, tempRepoPath],
+      ['clone', '--depth', '1', '--quiet', authenticatedUrl, tempRepoPath],
       { stdio: 'inherit' }
     );
 
@@ -260,18 +267,6 @@ if (!GITHUB_TOKEN) {
   process.exit(1);
 }
 
-// Configure git to use the token for authentication to avoid exposing it in logs
-console.log('🔒 Configuring git credentials...');
-const gitConfig = spawnSync(
-  'git',
-  ['config', '--global', `url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf`, 'https://github.com/'],
-  { stdio: 'inherit' }
-);
-
-if (gitConfig.status !== 0) {
-  console.error('❌ Failed to configure git credentials');
-  process.exit(1);
-}
 
 // Sync each repository
 let successCount = 0;
